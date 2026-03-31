@@ -1,80 +1,80 @@
 # Eino Agent
 
-[中文文档](./README_CN.md)
+[English Documentation](./README.md)
 
-A ReAct (Reasoning + Acting) Agent implementation based on the [Eino](https://github.com/cloudwego/eino) framework by CloudWeGo.
+基于字节跳动 [Eino](https://github.com/cloudwego/eino) 框架实现的 ReAct (Reasoning + Acting) Agent。
 
-## Features
+## 功能特性
 
-- **ReAct Paradigm**: Implements the Thought-Action-Observation loop for intelligent task execution
-- **Tool System**: Extensible tool registry with built-in tools (calculator, weather, time, search)
-- **LLM Integration**: OpenAI-compatible LLM client with tool calling support
-- **Callback System**: Observer pattern for monitoring agent execution
-- **Configurable**: Support for environment variables and command-line arguments
+- **ReAct 范式**: 实现思考-行动-观察循环，智能执行任务
+- **工具系统**: 可扩展的工具注册表，内置计算器、天气、时间、搜索等工具
+- **LLM 集成**: 支持 OpenAI 兼容的 LLM 客户端，具备工具调用能力
+- **回调系统**: 观察者模式监控 Agent 执行过程
+- **灵活配置**: 支持环境变量和命令行参数配置
 
-## Project Structure
+## 项目结构
 
 ```
 goagent/
 ├── cmd/
 │   └── agent/
-│       └── main.go          # Application entry point
+│       └── main.go          # 应用入口
 ├── internal/
 │   ├── agent/
-│   │   └── react.go         # ReAct Agent implementation
+│   │   └── react.go         # ReAct Agent 实现
 │   ├── llm/
-│   │   └── llm.go           # LLM client wrapper
+│   │   └── llm.go           # LLM 客户端封装
 │   └── tools/
-│       ├── tool.go          # Tool interface and registry
-│       └── builtin.go       # Built-in tools
+│       ├── tool.go          # 工具接口和注册表
+│       └── builtin.go       # 内置工具
 ├── pkg/
 │   └── config/
-│       └── config.go        # Configuration management
+│       └── config.go        # 配置管理
 ├── go.mod
 └── go.sum
 ```
 
-## Quick Start
+## 快速开始
 
-### Prerequisites
+### 环境要求
 
 - Go 1.21+
-- OpenAI API Key (or compatible endpoint)
+- OpenAI API Key（或兼容的端点）
 
-### Installation
+### 安装
 
 ```bash
-# Clone the repository
+# 克隆仓库
 git clone <repository-url>
 cd goagent
 
-# Install dependencies
+# 安装依赖
 go mod tidy
 ```
 
-### Configuration
+### 配置
 
-Set environment variables:
+设置环境变量：
 
 ```bash
 export OPENAI_API_KEY="your-api-key"
-export OPENAI_BASE_URL="https://api.openai.com/v1"  # Optional, for custom endpoints
-export LLM_MODEL="gpt-4o-mini"                       # Optional, default: gpt-4o-mini
+export OPENAI_BASE_URL="https://api.openai.com/v1"  # 可选，用于自定义端点
+export LLM_MODEL="gpt-4o-mini"                       # 可选，默认: gpt-4o-mini
 ```
 
-Or use command-line arguments:
+或使用命令行参数：
 
 ```bash
 go run ./cmd/agent -api-key="your-api-key" -model="gpt-4o-mini"
 ```
 
-### Run
+### 运行
 
 ```bash
 go run ./cmd/agent
 ```
 
-## Usage
+## 使用示例
 
 ```
 🤖 Eino Agent - 基于 Eino 框架的智能助手
@@ -95,9 +95,9 @@ go run ./cmd/agent
 👤 You: 
 ```
 
-## Creating Custom Tools
+## 创建自定义工具
 
-Implement the `Tool` interface:
+实现 `Tool` 接口：
 
 ```go
 type Tool interface {
@@ -106,7 +106,7 @@ type Tool interface {
 }
 ```
 
-Example:
+示例：
 
 ```go
 package main
@@ -120,66 +120,66 @@ import (
 func NewMyCustomTool() *tools.BaseTool {
     return tools.NewBaseTool(
         "my_tool",
-        "Description of what this tool does",
+        "工具功能描述",
         map[string]*schema.ParameterInfo{
             "param1": {
                 Type:     schema.String,
-                Desc:     "Parameter description",
+                Desc:     "参数描述",
                 Required: true,
             },
         },
         func(ctx context.Context, input string) (string, error) {
-            // Parse input and execute tool logic
+            // 解析输入并执行工具逻辑
             return "result", nil
         },
     )
 }
 
-// Register the tool
+// 注册工具
 registry := tools.NewToolRegistry()
 registry.Register(NewMyCustomTool())
 ```
 
-## ReAct Agent Architecture
+## ReAct Agent 架构
 
-The ReAct Agent follows the Thought-Action-Observation loop:
+ReAct Agent 遵循思考-行动-观察循环：
 
-1. **Thought**: The agent analyzes the input and plans the next step
-2. **Action**: The agent selects and executes a tool
-3. **Observation**: The agent observes the tool's output
-4. **Loop**: The cycle repeats until the task is complete or max iterations reached
+1. **思考 (Thought)**: Agent 分析输入并规划下一步
+2. **行动 (Action)**: Agent 选择并执行工具
+3. **观察 (Observation)**: Agent 观察工具输出
+4. **循环**: 重复上述步骤直到任务完成或达到最大迭代次数
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    User Input                        │
+│                    用户输入                          │
 └─────────────────────┬───────────────────────────────┘
                       ▼
 ┌─────────────────────────────────────────────────────┐
-│                  LLM (with Tools)                    │
+│                  LLM (带工具)                        │
 └─────────────────────┬───────────────────────────────┘
                       ▼
             ┌─────────────────┐
-            │   Tool Call?    │
+            │   有工具调用?    │
             └────────┬────────┘
                      │
         ┌────────────┼────────────┐
         ▼            ▼            ▼
-      Yes          No          Error
+      是           否          错误
         │            │            │
         ▼            ▼            ▼
 ┌──────────────┐ ┌────────┐ ┌──────────┐
-│ Execute Tool │ │ Finish │ │  Handle  │
-└──────┬───────┘ └────────┘ │  Error   │
+│  执行工具     │ │  完成  │ │  处理    │
+└──────┬───────┘ └────────┘ │  错误    │
        │                    └──────────┘
        ▼
 ┌──────────────┐
-│ Observation  │
+│   观察结果    │
 └──────┬───────┘
        │
-       └──────────────▶ Loop back to LLM
+       └──────────────▶ 回到 LLM 继续循环
 ```
 
-## Command Line Options
+## 命令行参数
 
 ```
   -api-key string
@@ -187,23 +187,23 @@ The ReAct Agent follows the Thought-Action-Observation loop:
   -base-url string
         OpenAI API Base URL
   -model string
-        Model name (default "gpt-4o-mini")
+        模型名称 (默认 "gpt-4o-mini")
   -verbose
-        Verbose output (default true)
+        详细输出 (默认 true)
   -max-iter int
-        Max iterations (default 10)
+        最大迭代次数 (默认 10)
 ```
 
-## Dependencies
+## 依赖
 
-- [github.com/cloudwego/eino](https://github.com/cloudwego/eino) - LLM application framework
-- [github.com/cloudwego/eino-ext/components/model/openai](https://github.com/cloudwego/eino-ext) - OpenAI model integration
+- [github.com/cloudwego/eino](https://github.com/cloudwego/eino) - LLM 应用开发框架
+- [github.com/cloudwego/eino-ext/components/model/openai](https://github.com/cloudwego/eino-ext) - OpenAI 模型集成
 
-## License
+## 许可证
 
 MIT License
 
-## Acknowledgments
+## 致谢
 
-- [CloudWeGo Eino](https://github.com/cloudwego/eino) - The underlying LLM application framework
-- [MOA AI Agent](https://km.sankuai.com/collabpage/2742907745) - Inspiration for the ReAct implementation
+- [CloudWeGo Eino](https://github.com/cloudwego/eino) - 底层 LLM 应用框架
+- [MOA AI Agent](https://km.sankuai.com/collabpage/2742907745) - ReAct 实现的参考灵感
